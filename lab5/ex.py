@@ -1,12 +1,11 @@
 from enum import Enum
 
-# Enum for taste types
 class Taste(Enum):
     SWEET = "Sweet"
     SOUR = "Sour"
     NEUTRAL = "Neutral"
 
-# Fruit class
+
 class Fruit:
     def __init__(self, name, size, color, taste):
         self.__name = name
@@ -62,8 +61,8 @@ class Topping(Enum):
 
 class FruitSalad:
     def __init__(self, fruits, topping):
-        self.__fruits = fruits    # Private field (list of fruits)
-        self.__topping = topping  # Private field (topping)
+        self.__fruits = fruits 
+        self.__topping = topping
 
     def get_fruits(self):
         return self.__fruits

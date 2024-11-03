@@ -12,7 +12,7 @@ class Fruit:
         self.__size = size
         self.__color = color
         self.__taste = taste
-
+    #getters
     def get_name(self):
         return self.__name
 
@@ -24,7 +24,7 @@ class Fruit:
 
     def get_taste(self):
         return self.__taste
-
+    #setters
     def set_name(self, name):
         self.__name = name
 
@@ -39,15 +39,14 @@ class Fruit:
             self.__taste = taste
         else:
             raise ValueError("Taste must be of type Taste Enum")
-
+    #repper
     def __repr__(self):
-        """Returns a formal string representation of the fruit"""
         return f"Fruit(name='{self.__name}', size={self.__size}, color='{self.__color}', taste={self.__taste})"
-
+    #destructor
     def __del__(self):
-        """Destructor to delete a fruit object"""
         print(f"{self.__name} deleted")
 
+#topping for salad
 class Topping(Enum):
     WHIPPED_CREAM = ("Whipped Cream", Taste.SWEET)
     CHOCOLATE_SYRUP = ("Chocolate Syrup", Taste.SWEET)
@@ -58,7 +57,7 @@ class Topping(Enum):
     def __init__(self, description, taste):
         self.description = description
         self.taste = taste
-
+#fruct salad
 class FruitSalad:
     def __init__(self, fruits, topping):
         self.__fruits = fruits 
@@ -83,11 +82,9 @@ class FruitSalad:
             raise ValueError("Topping must be of type Topping Enum")
 
     def add_fruit(self, fruit):
-        """Adds a fruit to the salad."""
         self.__fruits.append(fruit)
 
     def choose_topping_based_on_taste(self):
-        """Chooses a topping based on the taste of the fruits."""
         sweet_count = sum(1 for fruit in self.__fruits if fruit.get_taste() == Taste.SWEET)
         sour_count = sum(1 for fruit in self.__fruits if fruit.get_taste() == Taste.SOUR)
 
@@ -99,15 +96,13 @@ class FruitSalad:
             self.__topping = Topping.YOGURT
 
     def __repr__(self):
-        """Returns a formal string representation of the fruit salad"""
         fruit_list = ", ".join(repr(fruit) for fruit in self.__fruits)
         return f"FruitSalad(fruits=[{fruit_list}], topping={self.__topping.description})"
 
     def __del__(self):
-        """Destructor to delete a FruitSalad object"""
         print("FruitSalad deleted")
 
-if __name__ == "__main__":
+def main():
     apple = Fruit("Apple", 150, "Red", Taste.SWEET)
     lemon = Fruit("Lemon", 100, "Yellow", Taste.SOUR)
     banana = Fruit("Banana", 120, "Yellow", Taste.SWEET)

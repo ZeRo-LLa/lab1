@@ -94,7 +94,6 @@ class FruitSalad:
             self.__topping = Topping.LEMON_JUICE
         else:
             self.__topping = Topping.YOGURT
-
     def __repr__(self):
         fruit_list = ", ".join(repr(fruit) for fruit in self.__fruits)
         return f"FruitSalad(fruits=[{fruit_list}], topping={self.__topping.description})"

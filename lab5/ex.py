@@ -5,120 +5,106 @@ class Taste(Enum):
     SOUR = "Sour"
     NEUTRAL = "Neutral"
 
+class Topping(Enum):
+    CHOCOLATE = ("Chocolate", Taste.SWEET)
+    HONEY = ("Honey", Taste.SWEET)
+    LEMON = ("Lemon", Taste.SOUR)
+    CREAM = ("Cream", Taste.NEUTRAL)
+    NUTS = ("Nuts", Taste.NEUTRAL)
+
+    def __new__(cls, name, taste):
+        obj = object.__new__(cls)
+        obj._value_ = name
+        obj.taste = taste
+        return obj
+
 class Fruit:
     def __init__(self, name, size, color, taste):
-        self.__name = name
-        self.__size = size
-        self.__color = color
-        self.__taste = taste
-    #getters
-    def get_name(self):
-        return self.__name
-
-    def get_size(self):
-        return self.__size
-
-    def get_color(self):
-        return self.__color
-
-    def get_taste(self):
-        return self.__taste
-    #setters
-    def set_name(self, name):
-        self.__name = name
-
-    def set_size(self, size):
-        self.__size = size
-
-    def set_color(self, color):
-        self.__color = color
-
-    def set_taste(self, taste):
-        if isinstance(taste, Taste):
-            self.__taste = taste
-        else:
-            raise ValueError("Taste must be of type Taste Enum")
-    #repr method
-    def __repr__(self):
-        return f"Fruit(name='{self.__name}', size={self.__size}, color='{self.__color}', taste={self.__taste})"
-    #destructor
-    def __del__(self):
-        print(f"{self.__name} deleted")
-
-#Topping for salad
-class Topping(Enum):
-    WHIPPED_CREAM = ("Whipped Cream", Taste.SWEET)
-    CHOCOLATE_SYRUP = ("Chocolate Syrup", Taste.SWEET)
-    HONEY = ("Honey", Taste.SWEET)
-    YOGURT = ("Yogurt", Taste.NEUTRAL)
-    LEMON_JUICE = ("Lemon Juice", Taste.SOUR)
-
-    def __init__(self, description, taste):
-        self.description = description
+        self.name = name
+        self.size = size
+        self.color = color
         self.taste = taste
 
-#fruit salad
+    def __str__(self):
+        return f"{self.name} ({self.color}, {self.size}, {self.taste.value})"
+
 class FruitSalad:
-    def __init__(self, fruits, topping):
-        self.__fruits = fruits 
-        self.__topping = topping
-
-    def get_fruits(self):
-        return self.__fruits
-
-    def get_topping(self):
-        return self.__topping
-
-    def set_fruits(self, fruits):
-        if isinstance(fruits, list) and all(isinstance(fruit, Fruit) for fruit in fruits):
-            self.__fruits = fruits
-        else:
-            raise ValueError("Fruits must be a list of Fruit objects")
-
-    def set_topping(self, topping):
-        if isinstance(topping, Topping):
-            self.__topping = topping
-        else:
-            raise ValueError("Topping must be of type Topping Enum")
+    def __init__(self, name, fruits=None, topping=None, cost_price=0, sell_price=0):
+        self.name = name
+        self.fruits = fruits if fruits else []
+        self.topping = topping
+        self.cost_price = cost_price
+        self.sell_price = sell_price
 
     def add_fruit(self, fruit):
-        self.__fruits.append(fruit)
+        self.fruits.append(fruit)
 
-    #Function for choosing topping
-    def choose_topping_based_on_taste(self):
-        sweet_count = 0
-        sour_count = 0
+    def choose_topping(self):
+        taste_count = {Taste.SWEET: 0, Taste.SOUR: 0, Taste.NEUTRAL: 0}
+        for fruit in self.fruits:
+            taste_count[fruit.taste] += 1
+        dominant_taste = max(taste_count, key=taste_count.get)
+        for topping in Topping:
+            if topping.taste == dominant_taste:
+                self.topping = topping
+                break
 
-        for fruit in self.__fruits:
-            if fruit.get_taste() == Taste.SWEET:
-                sweet_count += 1
-            elif fruit.get_taste() == Taste.SOUR:
-                sour_count += 1
+    def shuffle_ingredients(self):
+        import random
+        random.shuffle(self.fruits)
 
-        if sweet_count > sour_count:
-            self.__topping = Topping.HONEY
-        elif sour_count > sweet_count:
-            self.__topping = Topping.LEMON_JUICE
-        else:
-            self.__topping = Topping.YOGURT
+    def set_prices(self):
+        print(f"\n{self.name}")
+        print("What it contains:")
+        for fruit in self.fruits:
+            print(f"- {fruit}")
+        print(f"Topping: {self.topping.name if self.topping else 'None'}")
+        while True:
+            try:
+                self.cost_price = float(input("Enter its cost price (e.g., 100): "))
+                self.sell_price = float(input("Enter its selling price (e.g., 150): "))
+                if self.cost_price <= 0 or self.sell_price <= 0:
+                    print("Prices must be positive numbers. Try again.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Please enter numeric values.")
 
-    def __repr__(self):
-        fruit_list = ", ".join(repr(fruit) for fruit in self.__fruits)
-        return f"FruitSalad(fruits=[{fruit_list}], topping={self.__topping.description})"
+    def profitability(self):
+        return self.sell_price / self.cost_price if self.cost_price > 0 else 0
 
-    def __del__(self):
-        print("FruitSalad deleted")
+    def __str__(self):
+        fruits_str = ", ".join([str(fruit) for fruit in self.fruits])
+        return f"Fruits: [{fruits_str}], Topping: {self.topping.name if self.topping else 'None'}"
 
 def main():
-    apple = Fruit("Apple", 150, "Red", Taste.SWEET)
-    lemon = Fruit("Lemon", 100, "Yellow", Taste.SOUR)
-    banana = Fruit("Banana", 120, "Yellow", Taste.SWEET)
+    apple = Fruit("Apple", "Medium", "Red", Taste.SWEET)
+    lemon = Fruit("Lemon", "Small", "Yellow", Taste.SOUR)
+    banana = Fruit("Banana", "Large", "Yellow", Taste.SWEET)
+    kiwi = Fruit("Kiwi", "Small", "Green", Taste.SOUR)
+    grape = Fruit("Grape", "Small", "Purple", Taste.NEUTRAL)
 
-    salad = FruitSalad([apple, lemon, banana], Topping.WHIPPED_CREAM)
-    print(salad)
+    salad1 = FruitSalad("Salad1", [apple, banana])
+    salad2 = FruitSalad("Salad2", [lemon, kiwi])
+    salad3 = FruitSalad("Salad3", [apple, grape, banana])
+    salad4 = FruitSalad("Salad4", [grape, kiwi])
+    salad5 = FruitSalad("Salad5", [lemon, apple])
 
-    salad.choose_topping_based_on_taste()
-    print("After choosing topping based on taste:")
-    print(salad)
+    for salad in [salad1, salad2, salad3, salad4, salad5]:
+        salad.choose_topping()
+        salad.set_prices()
+
+    salads = [salad1, salad2, salad3, salad4, salad5]
+    n = len(salads)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if salads[j].profitability() < salads[j + 1].profitability():
+                salads[j], salads[j + 1] = salads[j + 1], salads[j]
+
+    print("\nTop 5 salads by profitability:")
+    for index, salad in enumerate(salads[:5], start=1):
+        profitability_percentage = (salad.profitability() - 1) * 100
+        print(f"{index}. {salad.name}: {salad} -- Profitability: {profitability_percentage:.2f}%")
 
 main()
+

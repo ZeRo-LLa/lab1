@@ -1,5 +1,5 @@
 class Matri:
-    def __init__(self,data):
+    def __init__(self, data):
         self.data = data
 
     @staticmethod
@@ -16,29 +16,40 @@ class Matri:
             self.bubble_sort_row(row)
 
     @staticmethod
-    def calculate_sums_below_diag(sorted_matrix):
+    def calculate_sums_below_anti_diag(sorted_matrix):
         n = len(sorted_matrix)
-        sums = [0] * n
+        sums = []
         for col in range(n):
+            elements = []
             for row in range(n):
                 if row + col > n - 1:
-                    sums[col] += sorted_matrix[row][col]
-        return sums
+                    elements.append(sorted_matrix[row][col])
+            sums.append(elements)
+        sums_sum = [sum(col_elements) for col_elements in sums]
+        return sums, sums_sum
 
     @staticmethod
     def geometric_mean(values):
-        positive_values = [val for val in values if val > 0]
-        if len(positive_values) > 0:
-            product = 1
-            for val in positive_values:
-                product *= val
-            return product ** (1 / len(positive_values))
-        return 0
-    
+        result = []
+        for value_list in values:
+            if value_list:
+                product = 1
+                for value in value_list:
+                    if value <= 0:
+                        result.append(0)
+                        break
+                    product *= value
+                else:
+                    mean = product ** (1 / len(value_list))
+                    result.append(round(mean, 2))
+            else:
+                result.append(0)
+        return result
+
     def __str__(self):
         return "\n".join(str(row) for row in self.data)
 
-    
+
 matrix = Matri([
     [87, 98, 57, 29, 95],
     [-8, 59, -2, 9, -11],
@@ -48,15 +59,17 @@ matrix = Matri([
 ])
 
 print("Оригінальна матриця:")
-print(matrix, "\n" ) 
+print(matrix, "\n")
 
 matrix.sort_rows()
 print("Сортована матриця:")
 print(matrix, "\n")
 
-sorted_matrix = Matri.calculate_sums_below_diag(matrix.data)
-print("Середнє значення діагоналей матриці: ")
-print(sorted_matrix, "\n")
+sorted_matrix_elements, sorted_matrix_sums = Matri.calculate_sums_below_anti_diag(matrix.data)
 
-product = Matri.geometric_mean(sorted_matrix)
-print("Добуток середніх значень:", product)
+print("Сума елементів під побічною діагоналлю для кожного стовпця:")
+print(sorted_matrix_sums, "\n")
+
+product = Matri.geometric_mean(sorted_matrix_elements)
+print("Середнє геометричне для кожного стовпця:")
+print(product)
